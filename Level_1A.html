@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<!--
+  Level_1A.html — Landing Page
+  VicRoads Incident Explorer
+  Data source: Road_Accidents.db (Department of Transport and Planning, Victoria)
+  Queried values:
+    total_accidents    = 177,867   (SELECT COUNT(*) FROM Accident)
+    wet_road_pct       = 15.6%     (Accidents with surface condition 'Wet')
+    top_atmosph        = Clear     (Most common atmospheric condition)
+    night_pct          = 21.8%     (Accidents with dark light conditions)
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VicRoads Incident Explorer — Home</title>
+  <link rel="stylesheet" href="Level_1A.css">
+</head>
+<body>
+
+  <!-- ── Navigation Bar ──────────────────────────────────────── -->
+  <nav class="navbar">
+    <span class="navbar__brand">VicRoads Incident Explorer</span>
+    <ul class="navbar__links">
+      <li><a href="Level_1A.html" class="active">Home</a></li>
+      <li><a href="#">Mission</a></li>
+      <li><a href="Level_2A.html">Road Conditions</a></li>
+      <li><a href="#">People &amp; Injuries</a></li>
+      <li><a href="Level_3A.html">Deep Analysis</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── Hero Banner ─────────────────────────────────────────── -->
+  <header class="hero">
+    <h1 class="hero__headline">Understanding Road Incidents in Victoria</h1>
+    <p class="hero__sub">Explore the data. Understand the risks. Support safer roads.</p>
+    <a href="Level_2A.html" class="btn btn--primary">Explore the data →</a>
+  </header>
+
+  <!-- ── Page Body ───────────────────────────────────────────── -->
+  <main class="page-body">
+
+    <!-- ── Fact Cards (DB-queried values) ──────────────────── -->
+    <section class="fact-cards" aria-label="Key statistics">
+
+      <!-- FACT CARD 1: total_accidents -->
+      <div class="fact-card">
+        <div class="fact-card__label">Total Recorded Accidents</div>
+        <div class="fact-card__value">177,867</div>
+        <div class="fact-card__desc">Victoria-wide records</div>
+      </div>
+
+      <!-- FACT CARD 2: wet_road_pct — DB: Surface_Cond_Seq JOIN Road_Surface_Cond WHERE 'Wet' -->
+      <div class="fact-card">
+        <div class="fact-card__label">Accidents on Wet Roads</div>
+        <div class="fact-card__value">15.6%</div>
+        <div class="fact-card__desc">27,754 wet-road accidents</div>
+      </div>
+
+      <!-- FACT CARD 3: top_atmosph — DB: most common in Atmospheric_Cond_Seq -->
+      <div class="fact-card">
+        <div class="fact-card__label">Most Common Atmospheric Condition</div>
+        <div class="fact-card__value" style="font-size:1.4rem;">Clear</div>
+        <div class="fact-card__desc">84.7% of all accidents</div>
+      </div>
+
+      <!-- FACT CARD 4: night_pct — DB: Accident WHERE LIGHT_CONDITION IN dark IDs -->
+      <div class="fact-card">
+        <div class="fact-card__label">Night Time Accidents</div>
+        <div class="fact-card__value">21.8%</div>
+        <div class="fact-card__desc">38,710 after-dark accidents</div>
+      </div>
+
+    </section>
+
+    <!-- ── Introduction Text Block ─────────────────────────── -->
+    <section class="intro-block">
+      <p>This website presents data on road incidents across Victoria, enabling policy analysts and
+         researchers to explore factors that contribute to crashes. Use navigation to begin analysis.</p>
+    </section>
+
+    <!-- ── Quick Link Cards ─────────────────────────────────── -->
+    <section class="quick-links" aria-label="Navigation shortcuts">
+
+      <div class="quick-card">
+        <div class="quick-card__title">Road Conditions</div>
+        <p class="quick-card__text">Explore accidents by road surface, atmospheric conditions &amp;
+           light conditions.</p>
+        <a href="Level_2A.html" class="btn btn--link">View Road Conditions →</a>
+      </div>
+
+      <div class="quick-card">
+        <div class="quick-card__title">Deep Analysis</div>
+        <p class="quick-card__text">Discover which conditions are statistically above average risk
+           for accident frequency.</p>
+        <a href="Level_3A.html" class="btn btn--link">View Deep Analysis →</a>
+      </div>
+
+    </section>
+
+    <!-- ── Preview Chart: Accidents by Road Surface Condition ─ -->
+    <!--
+      Data from: SELECT r.SURFACE_COND_DESC, COUNT(DISTINCT s.ACCIDENT_NO)
+                 FROM Surface_Cond_Seq s JOIN Road_Surface_Cond r ON s.SURFACE_COND = r.SURFACE_COND
+                 GROUP BY r.SURFACE_COND_DESC ORDER BY cnt DESC
+      X axis = Road Surface Condition labels, Y axis = Accident Count
+    -->
+    <section class="chart-section">
+      <div class="chart-section__title">Accidents by Road Surface Condition</div>
+      <div class="chart-section__subtitle">
+        Data from ACCIDENT table joined with Road_Surface_Cond &nbsp;|&nbsp;
+        X = Road Surface Condition &nbsp;|&nbsp; Y = Accident Count
+      </div>
+
+      <div class="bar-chart" role="img" aria-label="Bar chart of accidents by road surface condition">
+
+        <!-- Dry: 150,876 / 150,876 = 100% of max -->
+        <div class="bar-row">
+          <span class="bar-row__label">Dry</span>
+          <div class="bar-row__track">
+            <div class="bar-row__fill" style="width:100%"></div>
+          </div>
+          <span class="bar-row__count">150,876</span>
+        </div>
+
+        <!-- Wet: 27,754 / 150,876 = 18.4% -->
+        <div class="bar-row">
+          <span class="bar-row__label">Wet</span>
+          <div class="bar-row__track">
+            <div class="bar-row__fill bar-row__fill--accent" style="width:18.4%"></div>
+          </div>
+          <span class="bar-row__count">27,754</span>
+        </div>
+
+        <!-- Unk.: 12,399 / 150,876 = 8.2% -->
+        <div class="bar-row">
+          <span class="bar-row__label">Unknown</span>
+          <div class="bar-row__track">
+            <div class="bar-row__fill" style="width:8.2%"></div>
+          </div>
+          <span class="bar-row__count">12,399</span>
+        </div>
+
+        <!-- Muddy: 1,060 / 150,876 = 0.7% -->
+        <div class="bar-row">
+          <span class="bar-row__label">Muddy</span>
+          <div class="bar-row__track">
+            <div class="bar-row__fill" style="width:0.7%"></div>
+          </div>
+          <span class="bar-row__count">1,060</span>
+        </div>
+
+        <!-- Icy: 614 / 150,876 = 0.4% -->
+        <div class="bar-row">
+          <span class="bar-row__label">Icy</span>
+          <div class="bar-row__track">
+            <div class="bar-row__fill" style="width:0.4%"></div>
+          </div>
+          <span class="bar-row__count">614</span>
+        </div>
+
+        <!-- Snowy: 109 / 150,876 = 0.07% -->
+        <div class="bar-row">
+          <span class="bar-row__label">Snowy</span>
+          <div class="bar-row__track">
+            <div class="bar-row__fill" style="width:0.07%"></div>
+          </div>
+          <span class="bar-row__count">109</span>
+        </div>
+
+      </div><!-- /.bar-chart -->
+
+      <div class="chart-axis">
+        <span></span>
+        <div class="chart-axis__labels">
+          <span>0</span>
+          <span>50,000</span>
+          <span>100,000</span>
+          <span>150,000+</span>
+        </div>
+        <span></span>
+      </div>
+
+    </section><!-- /.chart-section -->
+
+  </main>
+
+  <!-- ── Footer ──────────────────────────────────────────────── -->
+  <footer class="footer">
+    <p>Data source: Department of Transport and Planning, Victoria &nbsp;|&nbsp; Built by Brandon &amp; Somanea</p>
+    <ul class="footer__links">
+      <li><a href="Level_1A.html">Home</a></li>
+      <li><a href="#">Mission</a></li>
+      <li><a href="Level_2A.html">Road Conditions</a></li>
+      <li><a href="#">People &amp; Injuries</a></li>
+      <li><a href="Level_3A.html">Deep Analysis</a></li>
+    </ul>
+  </footer>
+
+</body>
+</html>

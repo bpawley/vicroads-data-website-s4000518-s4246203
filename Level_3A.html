@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<!--
+  Level_3A.html — Deep Dive: Above Average Risk Conditions
+  VicRoads Incident Explorer
+  Data source: Road_Accidents.db
+
+  Chained query logic:
+    Step 1 — Compute average accidents per atmospheric condition:
+      SELECT AVG(cnt) FROM (
+        SELECT COUNT(DISTINCT s.ACCIDENT_NO) as cnt
+        FROM Atmospheric_Cond_Seq s
+        GROUP BY s.ATMOSPH_COND
+      )
+      Result: ~24,119 accidents per condition (average baseline)
+
+    Step 2 — Find conditions where count > average:
+      SELECT a.ATMOSPH_COND_DESC, COUNT(DISTINCT s.ACCIDENT_NO) as cnt
+      FROM Atmospheric_Cond_Seq s JOIN Amospheric_Cond a ON s.ATMOSPH_COND = a.ATMOSPH_COND
+      GROUP BY a.ATMOSPH_COND_DESC
+      HAVING cnt > 24119
+      ORDER BY cnt DESC
+      Result: Clear (150,593) — only condition above average
+
+  All 8 conditions ranked:
+    Clear:        150,593  (ABOVE avg by 524.4%)
+    Not known:     19,490  (below avg by 19.2%)
+    Raining:       18,469  (below avg by 23.4%)
+    Strong winds:   2,184  (below avg by 90.9%)
+    Fog:            1,531  (below avg by 93.7%)
+    Dust:             444  (below avg by 98.2%)
+    Smoke:            174  (below avg by 99.3%)
+    Snowing:           69  (below avg by 99.7%)
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VicRoads Incident Explorer — Deep Analysis</title>
+  <link rel="stylesheet" href="Level_3A.css">
+</head>
+<body>
+
+  <!-- ── Navigation Bar ──────────────────────────────────────── -->
+  <nav class="navbar">
+    <span class="navbar__brand">VicRoads Incident Explorer</span>
+    <ul class="navbar__links">
+      <li><a href="Level_1A.html">Home</a></li>
+      <li><a href="#">Mission</a></li>
+      <li><a href="Level_2A.html">Road Conditions</a></li>
+      <li><a href="#">People &amp; Injuries</a></li>
+      <li><a href="Level_3A.html" class="active">Deep Analysis</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── Page Heading ────────────────────────────────────────── -->
+  <header class="page-heading">
+    <h1>Deep Dive: Above Average Risk Conditions</h1>
+    <p>Identify which atmospheric road conditions are statistically above average for accident frequency.</p>
+  </header>
+
+  <main class="page-body">
+
+    <!-- ── Chained Query Steps ──────────────────────────────── -->
+    <!--
+      Step 1 feeds its result (avg = 24,119) as input threshold to Step 2.
+    -->
+    <section class="query-steps" aria-label="Two-step analysis">
+
+      <div class="query-step">
+        <div class="query-step__badge">Step 1 — Query 1 Output (Average Baseline)</div>
+        <div class="query-step__title">Average accidents per condition</div>
+        <div class="query-step__value">24,119</div>
+        <div class="query-step__desc">
+          This value feeds into Step 2 as the filter threshold.
+          <br>
+          <em>SELECT AVG(cnt) FROM (SELECT COUNT(DISTINCT ACCIDENT_NO) FROM Atmospheric_Cond_Seq GROUP BY ATMOSPH_COND)</em>
+        </div>
+      </div>
+
+      <div class="query-step query-step--arrow" aria-hidden="true">→</div>
+
+      <div class="query-step">
+        <div class="query-step__badge">Step 2 — Query 2 uses Step 1 result as filter input</div>
+        <div class="query-step__title">Conditions where count &gt; average</div>
+        <div class="query-step__value">1 condition found</div>
+        <div class="query-step__desc">
+          New facts discovered from the chained queries:
+          <strong>Clear</strong> is the only atmospheric condition above the average baseline of 24,119.
+          <br>
+          <em>HAVING COUNT(DISTINCT ACCIDENT_NO) &gt; 24119</em>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ── Analysis Controls + Above-Average Table ──────────── -->
+    <div class="analysis-grid">
+
+      <!-- ── Analysis Controls ─────────────────────────────── -->
+      <aside class="controls-panel">
+        <div class="controls-panel__title">Analysis Controls</div>
+
+        <div class="controls-group">
+          <div class="controls-group__label">Group by:</div>
+          <div class="controls-group__options">
+            <label class="ctrl-option">
+              <input type="radio" name="group_by"> Road Surface
+            </label>
+            <label class="ctrl-option">
+              <input type="radio" name="group_by" checked> Atmospheric
+            </label>
+            <label class="ctrl-option">
+              <input type="radio" name="group_by"> Light Condition
+            </label>
+          </div>
+        </div>
+
+        <div class="run-btn">Run Analysis</div>
+        <p class="controls-note">Dynamic analysis available in Level 3B.</p>
+      </aside>
+
+      <!-- ── Above Average Conditions Table ───────────────── -->
+      <!--
+        Query: SELECT a.ATMOSPH_COND_DESC, COUNT(DISTINCT s.ACCIDENT_NO) as cnt
+               FROM Atmospheric_Cond_Seq s JOIN Amospheric_Cond a ...
+               GROUP BY a.ATMOSPH_COND_DESC
+               HAVING cnt > 24119
+               ORDER BY cnt DESC
+      -->
+      <div class="above-avg-wrap">
+        <div class="above-avg-wrap__title">Above Average Conditions Table</div>
+        <div class="above-avg-wrap__sub">
+          Rank &nbsp;|&nbsp; Condition Label &nbsp;|&nbsp; Accidents &nbsp;|&nbsp;
+          vs. Average &nbsp;|&nbsp; % Above Average &nbsp;|&nbsp;
+          Sorted descending by Accident Count
+        </div>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Condition Label</th>
+              <th>Accidents</th>
+              <th>vs. Average</th>
+              <th>% Above Average</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Only Clear exceeds the average of 24,119 -->
+            <tr>
+              <td>1</td>
+              <td>Clear</td>
+              <td>150,593</td>
+              <td>+126,474</td>
+              <td><span class="pct-above">+524.4%</span></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="5">
+                Only 1 of 8 atmospheric conditions exceeds the average baseline of 24,119.
+                Sorted descending by Accident Count.
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+    </div><!-- /.analysis-grid -->
+
+    <!-- ── Ranked Bar Chart + New Facts Panel ────────────────── -->
+    <div class="chart-facts-row">
+
+      <!-- Horizontal ranked bar chart -->
+      <!--
+        All 8 conditions ranked by accident count.
+        Bars above average shown in red, below average in grey.
+        Dashed vertical line marks the average baseline (24,119).
+        Max bar width = 150,593 (Clear). Average = 24,119 = 16.0% of max.
+      -->
+      <section class="chart-section">
+        <div class="chart-section__title">Ranked Bar Chart — Atmospheric Conditions</div>
+        <div class="chart-section__sub">
+          Horizontal bars ranked by accident count. &nbsp;
+          <span style="color:#c0392b;font-weight:600;">Red = above average</span> &nbsp;|&nbsp;
+          <span style="color:#8fa3b5;font-weight:600;">Grey = below average</span> &nbsp;|&nbsp;
+          Dashed line = average baseline (24,119)
+        </div>
+
+        <div class="h-bar-chart" role="img" aria-label="Horizontal ranked bar chart of atmospheric conditions">
+
+          <!-- Clear: 150,593 / 150,593 = 100% → ABOVE avg -->
+          <div class="h-bar-row">
+            <span class="h-bar-row__label">Clear</span>
+            <div class="h-bar-row__track">
+              <div class="h-bar-row__fill h-bar-row__fill--above" style="width:100%"></div>
+            </div>
+            <span class="h-bar-row__count">150,593</span>
+          </div>
+
+          <!-- Not known: 19,490 / 150,593 = 12.9% → below avg (avg line at 16.0%) -->
+          <div class="h-bar-row">
+            <span class="h-bar-row__label">Not Known</span>
+            <div class="h-bar-row__track">
+              <div class="h-bar-row__fill h-bar-row__fill--below" style="width:12.9%"></div>
+            </div>
+            <span class="h-bar-row__count">19,490</span>
+          </div>
+
+          <!-- Raining: 18,469 / 150,593 = 12.3% → below avg -->
+          <div class="h-bar-row">
+            <span class="h-bar-row__label">Raining</span>
+            <div class="h-bar-row__track">
+              <div class="h-bar-row__fill h-bar-row__fill--below" style="width:12.3%"></div>
+            </div>
+            <span class="h-bar-row__count">18,469</span>
+          </div>
+
+          <!-- Strong winds: 2,184 / 150,593 = 1.4% → below avg -->
+          <div class="h-bar-row">
+            <span class="h-bar-row__label">Strong Winds</span>
+            <div class="h-bar-row__track">
+              <div class="h-bar-row__fill h-bar-row__fill--below" style="width:1.4%"></div>
+            </div>
+            <span class="h-bar-row__count">2,184</span>
+          </div>
+
+          <!-- Fog: 1,531 / 150,593 = 1.0% → below avg -->
+          <div class="h-bar-row">
+            <span class="h-bar-row__label">Fog</span>
+            <div class="h-bar-row__track">
+              <div class="h-bar-row__fill h-bar-row__fill--below" style="width:1.0%"></div>
+            </div>
+            <span class="h-bar-row__count">1,531</span>
+          </div>
+
+          <!-- Dust: 444 / 150,593 = 0.3% → below avg -->
+          <div class="h-bar-row">
+            <span class="h-bar-row__label">Dust</span>
+            <div class="h-bar-row__track">
+              <div class="h-bar-row__fill h-bar-row__fill--below" style="width:0.3%"></div>
+            </div>
+            <span class="h-bar-row__count">444</span>
+          </div>
+
+          <!-- Smoke: 174 / 150,593 = 0.1% → below avg -->
+          <div class="h-bar-row">
+            <span class="h-bar-row__label">Smoke</span>
+            <div class="h-bar-row__track">
+              <div class="h-bar-row__fill h-bar-row__fill--below" style="width:0.1%"></div>
+            </div>
+            <span class="h-bar-row__count">174</span>
+          </div>
+
+          <!-- Snowing: 69 / 150,593 = 0.05% → below avg -->
+          <div class="h-bar-row">
+            <span class="h-bar-row__label">Snowing</span>
+            <div class="h-bar-row__track">
+              <div class="h-bar-row__fill h-bar-row__fill--below" style="width:0.05%"></div>
+            </div>
+            <span class="h-bar-row__count">69</span>
+          </div>
+
+        </div><!-- /.h-bar-chart -->
+
+        <!-- Average baseline marker note -->
+        <p style="font-size:0.76rem;color:var(--text-muted);margin-top:0.9rem;">
+          ▲ Average baseline: 24,119 accidents per condition (dashed line at ~16% of chart width)
+        </p>
+
+        <div class="chart-legend">
+          <span><span class="legend-dot" style="background:#c0392b"></span>Above average</span>
+          <span><span class="legend-dot" style="background:#8fa3b5"></span>Below average</span>
+          <span>— — Average baseline</span>
+        </div>
+
+      </section>
+
+      <!-- ── New Facts Panel ─────────────────────────────────── -->
+      <!--
+        Auto-generated text from chained query results.
+        1 condition exceeds average. Clear is highest at 524.4% above avg.
+      -->
+      <aside class="facts-panel">
+        <div class="facts-panel__title">New Facts Panel</div>
+        <p>
+          <strong>1</strong> condition exceeds the average of
+          <strong>24,119</strong> accidents per category.
+        </p>
+        <p>
+          <strong>Clear</strong> is the highest-risk condition, with
+          <strong>150,593</strong> accidents — <strong>524.4%</strong> above average.
+        </p>
+        <p>
+          The remaining 7 conditions all fall below the average baseline,
+          with <strong>Snowing</strong> having the fewest accidents (69).
+        </p>
+        <p>
+          Note: The high count for "Clear" reflects that most driving happens
+          in clear weather, not necessarily that clear weather is more dangerous
+          per trip than adverse conditions.
+        </p>
+        <a href="#" class="btn btn--outline">Download Results</a>
+      </aside>
+
+    </div><!-- /.chart-facts-row -->
+
+    <!-- ── All Conditions Comparison ──────────────────────────── -->
+    <!--
+      All conditions shown: above-average tags are styled normally,
+      below-average tags use strikethrough for clear visual contrast.
+    -->
+    <section class="conditions-comparison">
+      <div class="conditions-comparison__title">
+        All Conditions Comparison — above average shown highlighted, below average shown with strikethrough
+      </div>
+      <div class="conditions-list">
+        <span class="condition-tag condition-tag--above">Clear [above avg.]</span>
+        <span class="condition-tag condition-tag--below">Not Known [below avg.]</span>
+        <span class="condition-tag condition-tag--below">Raining [below avg.]</span>
+        <span class="condition-tag condition-tag--below">Strong Winds [below avg.]</span>
+        <span class="condition-tag condition-tag--below">Fog [below avg.]</span>
+        <span class="condition-tag condition-tag--below">Dust [below avg.]</span>
+        <span class="condition-tag condition-tag--below">Smoke [below avg.]</span>
+        <span class="condition-tag condition-tag--below">Snowing [below avg.]</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ──────────────────────────────────────────────── -->
+  <footer class="footer">
+    <p>Data source: Department of Transport and Planning, Victoria &nbsp;|&nbsp; Built by Brandon &amp; Somanea</p>
+    <ul class="footer__links">
+      <li><a href="Level_1A.html">Home</a></li>
+      <li><a href="#">Mission</a></li>
+      <li><a href="Level_2A.html">Road Conditions</a></li>
+      <li><a href="#">People &amp; Injuries</a></li>
+      <li><a href="Level_3A.html">Deep Analysis</a></li>
+    </ul>
+  </footer>
+
+</body>
+</html>

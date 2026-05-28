@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<!--
+  Level_2A.html — Road Conditions Summary Page
+  VicRoads Incident Explorer
+  Data source: Road_Accidents.db
+
+  Key queries used:
+    Surface conditions:
+      SELECT r.SURFACE_COND_DESC, COUNT(DISTINCT s.ACCIDENT_NO) as cnt,
+             ROUND(AVG(p.INJ_LEVEL),2) as avg_severity
+      FROM Surface_Cond_Seq s
+      JOIN Road_Surface_Cond r ON s.SURFACE_COND = r.SURFACE_COND
+      JOIN Person p ON s.ACCIDENT_NO = p.ACCIDENT_NO
+      GROUP BY r.SURFACE_COND_DESC ORDER BY cnt DESC
+
+    Atmospheric conditions:
+      SELECT a.ATMOSPH_COND_DESC, COUNT(DISTINCT s.ACCIDENT_NO) as cnt
+      FROM Atmospheric_Cond_Seq s JOIN Amospheric_Cond a ON s.ATMOSPH_COND = a.ATMOSPH_COND
+      GROUP BY a.ATMOSPH_COND_DESC ORDER BY cnt DESC
+
+    Light conditions:
+      SELECT lc.COND_NAME, COUNT(*) as cnt
+      FROM Accident a JOIN Light_Condition lc ON a.LIGHT_CONDITION = lc.COND_ID
+      GROUP BY lc.COND_NAME ORDER BY cnt DESC
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VicRoads Incident Explorer — Road Conditions</title>
+  <link rel="stylesheet" href="Level_2A.css">
+</head>
+<body>
+
+  <!-- ── Navigation Bar ──────────────────────────────────────── -->
+  <nav class="navbar">
+    <span class="navbar__brand">VicRoads Incident Explorer</span>
+    <ul class="navbar__links">
+      <li><a href="Level_1A.html">Home</a></li>
+      <li><a href="#">Mission</a></li>
+      <li><a href="Level_2A.html" class="active">Road Conditions</a></li>
+      <li><a href="#">People &amp; Injuries</a></li>
+      <li><a href="Level_3A.html">Deep Analysis</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── Page Heading ────────────────────────────────────────── -->
+  <header class="page-heading">
+    <h1>Accident Summary by Road &amp; Environmental Conditions</h1>
+    <p>Filter accidents by road surface, atmospheric conditions, or light conditions to explore summarised data.</p>
+  </header>
+
+  <main class="page-body">
+
+    <!-- ── Stat Cards ─────────────────────────────────────────── -->
+    <!--
+      Total Accidents: COUNT(*) FROM Accident = 177,867
+      Surface default showing all conditions (Road Surface selected)
+      Most risky: Dry has highest count; Unk. has highest avg severity 3.37
+    -->
+    <section class="stat-cards" aria-label="Summary statistics">
+
+      <div class="stat-card">
+        <div class="stat-card__label">Total Accidents</div>
+        <div class="stat-card__value">177,867</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__label">Filtered Results (Road Surface)</div>
+        <!-- Showing all surface conditions combined -->
+        <div class="stat-card__value">192,812</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__label">Most Risky Condition</div>
+        <!-- Highest avg severity (excluding Unknown): Muddy = 2.90 lowest INJ_LEVEL num = most severe -->
+        <!-- INJ_LEVEL: 1=Fatal, 2=Serious, 3=Other, 4=Not injured — lower = more severe -->
+        <div class="stat-card__value stat-card__value--label">Muddy</div>
+      </div>
+
+    </section>
+
+    <!-- ── Filter Panel + Table ────────────────────────────────── -->
+    <div class="content-grid">
+
+      <!-- ── Filter Panel (static/display only for Level A) ───── -->
+      <aside class="filter-panel">
+        <div class="filter-panel__title">Filter Panel</div>
+
+        <div class="filter-group">
+          <div class="filter-group__label">Condition Type</div>
+          <div class="filter-group__options">
+            <label class="filter-option">
+              <input type="radio" name="cond_type" checked> Road Surface
+            </label>
+            <label class="filter-option">
+              <input type="radio" name="cond_type"> Atmospheric
+            </label>
+            <label class="filter-option">
+              <input type="radio" name="cond_type"> Light Condition
+            </label>
+            <label class="filter-option">
+              <input type="radio" name="cond_type"> All
+            </label>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-group__label">Accident Severity</div>
+          <div class="filter-group__options">
+            <label class="filter-option">
+              <input type="radio" name="severity" checked> Fatal
+            </label>
+            <label class="filter-option">
+              <input type="radio" name="severity"> Serious
+            </label>
+            <label class="filter-option">
+              <input type="radio" name="severity"> Other
+            </label>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-group__label">Year Range</div>
+          <select class="filter-select" disabled>
+            <option>2015 – 2023</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-group__label">Speed Zone</div>
+          <select class="filter-select" disabled>
+            <option>All zones</option>
+          </select>
+        </div>
+
+        <div class="filter-btn">Apply Filters</div>
+        <p class="filter-note">Dynamic filtering available in Level 2B.</p>
+      </aside>
+
+      <!-- ── Aggregated Results Table ──────────────────────────── -->
+      <div class="results-panel">
+        <div class="results-table-wrap">
+          <div class="results-table-wrap__title">Aggregated Results Table — Road Surface Conditions</div>
+          <div class="results-table-wrap__sub">
+            Condition Label &nbsp;|&nbsp; Accident Count &nbsp;|&nbsp;
+            % of Total &nbsp;|&nbsp; Avg. Severity Rating &nbsp;|&nbsp;
+            Sorted descending by Accident Count
+          </div>
+
+          <!--
+            Data:
+              Dry:     140,210 accidents, 78.8% of total, avg_severity 3.25
+              Wet:      25,311 accidents, 14.2% of total, avg_severity 3.21
+              Unknown:  11,650 accidents,  6.5% of total, avg_severity 3.37
+              Muddy:       970 accidents,  0.5% of total, avg_severity 2.90
+              Icy:         572 accidents,  0.3% of total, avg_severity 3.12
+              Snowy:        99 accidents, <0.1% of total, avg_severity 3.28
+            (Persons table used for avg_severity: INJ_LEVEL 1=Fatal,2=Serious,3=Other,4=Not inj.)
+          -->
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Condition Label</th>
+                <th>Accident Count</th>
+                <th>% of Total</th>
+                <th>Avg. Severity Rating</th>
+                <th>Risk Level</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Dry</td>
+                <td>140,210</td>
+                <td>78.8%</td>
+                <td>3.25</td>
+                <td><span class="badge badge--mid">Moderate</span></td>
+              </tr>
+              <tr>
+                <td>Wet</td>
+                <td>25,311</td>
+                <td>14.2%</td>
+                <td>3.21</td>
+                <td><span class="badge badge--mid">Moderate</span></td>
+              </tr>
+              <tr>
+                <td>Unknown</td>
+                <td>11,650</td>
+                <td>6.5%</td>
+                <td>3.37</td>
+                <td><span class="badge badge--low">Low</span></td>
+              </tr>
+              <tr>
+                <td>Muddy</td>
+                <td>970</td>
+                <td>0.5%</td>
+                <td>2.90</td>
+                <td><span class="badge badge--high">High</span></td>
+              </tr>
+              <tr>
+                <td>Icy</td>
+                <td>572</td>
+                <td>0.3%</td>
+                <td>3.12</td>
+                <td><span class="badge badge--mid">Moderate</span></td>
+              </tr>
+              <tr>
+                <td>Snowy</td>
+                <td>99</td>
+                <td>&lt;0.1%</td>
+                <td>3.28</td>
+                <td><span class="badge badge--mid">Moderate</span></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="5">Sorted descending by Accident Count. Severity: 1=Fatal, 2=Serious, 3=Other, 4=Not Injured (lower = more severe)</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div><!-- /.results-table-wrap -->
+      </div><!-- /.results-panel -->
+
+    </div><!-- /.content-grid -->
+
+    <!-- ── Charts Row ─────────────────────────────────────────── -->
+    <div class="chart-row">
+
+      <!-- Bar chart: Surface Conditions -->
+      <!--
+        Data from Surface_Cond_Seq JOIN Road_Surface_Cond, grouped by condition
+        X axis: Condition label, Y axis: Number of accidents
+      -->
+      <section class="chart-section">
+        <div class="chart-section__title">Road Surface Conditions — Accident Count</div>
+        <div class="chart-section__sub">
+          X axis: Condition label &nbsp;|&nbsp; Y axis: Number of accidents
+        </div>
+
+        <div class="bar-chart" role="img" aria-label="Bar chart of road surface condition accident counts">
+          <div class="bar-row">
+            <span class="bar-row__label">Dry</span>
+            <div class="bar-row__track">
+              <div class="bar-row__fill" style="width:100%"></div>
+            </div>
+            <span class="bar-row__count">140,210</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-row__label">Wet</span>
+            <div class="bar-row__track">
+              <div class="bar-row__fill bar-row__fill--orange" style="width:18.1%"></div>
+            </div>
+            <span class="bar-row__count">25,311</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-row__label">Unknown</span>
+            <div class="bar-row__track">
+              <div class="bar-row__fill" style="width:8.3%"></div>
+            </div>
+            <span class="bar-row__count">11,650</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-row__label">Muddy</span>
+            <div class="bar-row__track">
+              <div class="bar-row__fill bar-row__fill--orange" style="width:0.7%"></div>
+            </div>
+            <span class="bar-row__count">970</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-row__label">Icy</span>
+            <div class="bar-row__track">
+              <div class="bar-row__fill" style="width:0.4%"></div>
+            </div>
+            <span class="bar-row__count">572</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-row__label">Snowy</span>
+            <div class="bar-row__track">
+              <div class="bar-row__fill" style="width:0.07%"></div>
+            </div>
+            <span class="bar-row__count">99</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Bar chart: Light Conditions -->
+      <!--
+        Data from Accident JOIN Light_Condition, grouped by COND_NAME
+        X axis: Condition label, Y axis: Number of accidents
+      -->
+      <section class="chart-section">
+        <div class="chart-section__title">Light Conditions — Accident Count</div>
+        <div class="chart-section__sub">
+          X axis: Condition label &nbsp;|&nbsp; Y axis: Number of accidents
+        </div>
+
+        <div class="bar-chart" role="img" aria-label="Bar chart of light condition accident counts">
+          <div class="bar-row">
+            <span class="bar-row__label">Day</span>
+            <div class="bar-row__track">
+              <div class="bar-row__fill bar-row__fill--teal" style="width:100%"></div>
+            </div>
+            <span class="bar-row__count">119,030</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-row__label">Dark — lit</span>
+            <div class="bar-row__track">
+              <div class="bar-row__fill bar-row__fill--teal" style="width:22.7%"></div>
+            </div>
+            <span class="bar-row__count">27,023</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-row__label">Dusk/Dawn</span>
+            <div class="bar-row__track">
+              <div class="bar-row__fill bar-row__fill--teal" style="width:12.7%"></div>
+            </div>
+            <span class="bar-row__count">15,168</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-row__label">Dark — unlit</span>
+            <div class="bar-row__track">
+              <div class="bar-row__fill bar-row__fill--orange" style="width:7.8%"></div>
+            </div>
+            <span class="bar-row__count">9,290</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-row__label">Unknown</span>
+            <div class="bar-row__track">
+              <div class="bar-row__fill" style="width:4.2%"></div>
+            </div>
+            <span class="bar-row__count">4,959</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-row__label">Dark — unk.</span>
+            <div class="bar-row__track">
+              <div class="bar-row__fill" style="width:1.7%"></div>
+            </div>
+            <span class="bar-row__count">2,010</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-row__label">Dark — off</span>
+            <div class="bar-row__track">
+              <div class="bar-row__fill bar-row__fill--orange" style="width:0.3%"></div>
+            </div>
+            <span class="bar-row__count">387</span>
+          </div>
+        </div>
+
+      </section>
+
+    </div><!-- /.chart-row -->
+
+    <!-- ── Insight Panel ─────────────────────────────────────── -->
+    <!--
+      Auto-generated insight based on the data:
+      - Road Surface filter active
+      - 'Dry' conditions have the highest count (140,210 = 78.8% of records)
+      - 'Muddy' has the lowest avg severity score (2.90, i.e. most severe injuries)
+    -->
+    <section class="insight-panel" aria-label="Insight summary">
+      <div class="insight-panel__title">Insight Panel</div>
+      <p>
+        With the current filter (Road Surface), <strong>Dry</strong> conditions account for the highest number
+        of accidents (<strong>140,210</strong>), representing <strong>78.8%</strong> of all filtered results.
+      </p>
+      <p>
+        However, <strong>Muddy</strong> road conditions produce the most severe average injuries
+        (severity score <strong>2.90</strong>), compared to the dry-road average of 3.25.
+        Severity scale: 1 = Fatal, 2 = Serious, 3 = Other injury, 4 = Not injured.
+      </p>
+      <a href="Level_3A.html" class="btn btn--outline">Download Results</a>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ──────────────────────────────────────────────── -->
+  <footer class="footer">
+    <p>Data source: Department of Transport and Planning, Victoria &nbsp;|&nbsp; Built by Brandon &amp; Somanea</p>
+    <ul class="footer__links">
+      <li><a href="Level_1A.html">Home</a></li>
+      <li><a href="#">Mission</a></li>
+      <li><a href="Level_2A.html">Road Conditions</a></li>
+      <li><a href="#">People &amp; Injuries</a></li>
+      <li><a href="Level_3A.html">Deep Analysis</a></li>
+    </ul>
+  </footer>
+
+</body>
+</html>
