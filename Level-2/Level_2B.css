@@ -1,0 +1,430 @@
+/* ============================================================
+   Level_2B.css — People and Injuries Summary Page (stub)
+   VicRoads Incident Explorer
+   Wireframes 5 (part a) + 5 (part b) — combined on one page
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  color: #1a2b3c;
+  background: #f4f8fc;
+  line-height: 1.5;
+}
+
+a { color: inherit; text-decoration: none; }
+
+:root {
+  --navy:             #1b3a5c;
+  --blue:             #2563a8;
+  --blue-mid:         #3a7dc9;
+  --blue-light:       #cde4f7;
+  --blue-pale:        #e8f3fb;
+  --accent:           #f0a500;
+  --white:            #ffffff;
+  --text:             #1a2b3c;
+  --text-muted:       #5a6e82;
+  --border:           #b8d4ec;
+  --placeholder-bg:   #dce8f4;
+  --placeholder-text: #7a9bb5;
+}
+
+/* ── Navigation ─────────────────────────────────────────────── */
+.navbar {
+  background: var(--navy);
+  color: var(--white);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+.navbar__brand { font-size: 1rem; font-weight: 700; white-space: nowrap; }
+.navbar__links { display: flex; gap: 0.25rem; list-style: none; }
+
+.navbar__links a {
+  display: block;
+  padding: 0.4rem 0.9rem;
+  border-radius: 4px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  transition: background 0.15s;
+}
+
+.navbar__links a:hover,
+.navbar__links a.active { background: rgba(255,255,255,0.15); color: var(--white); }
+
+/* ── Page heading ───────────────────────────────────────────── */
+.page-heading {
+  background: linear-gradient(135deg, var(--blue) 0%, var(--navy) 100%);
+  color: var(--white);
+  padding: 2.5rem 2rem 2rem;
+  text-align: center;
+}
+
+.page-heading h1   { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+.page-heading p    { font-size: 0.97rem; color: rgba(255,255,255,0.8); max-width: 640px; margin: 0 auto; }
+
+/* ── Breadcrumb ─────────────────────────────────────────────── */
+.breadcrumb {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  padding: 0.8rem 0 0;
+  margin-bottom: 1.5rem;
+}
+
+.breadcrumb a { color: var(--blue); }
+.breadcrumb a:hover { text-decoration: underline; }
+
+/* ── Page body ──────────────────────────────────────────────── */
+.page-body {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+/* ── Section divider ────────────────────────────────────────── */
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Filter panel (full-width row) ─────────────────────────── */
+.filter-panel {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem 1rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 4px rgba(27,58,92,0.05);
+}
+
+.filter-panel__title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 1rem;
+}
+
+.filter-panel__note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.9rem;
+  margin-bottom: 0.9rem;
+}
+
+.filter-field { display: flex; flex-direction: column; gap: 0.3rem; }
+
+.filter-field label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.filter-select,
+.filter-input {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-size: 0.84rem;
+  color: var(--text);
+  background: var(--blue-pale);
+  /* disabled styling for stub */
+  opacity: 0.7;
+  cursor: default;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: default;
+  transition: opacity 0.15s;
+}
+
+.btn--primary  { background: var(--blue); color: var(--white); }
+.btn--ghost    { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+.btn--outline  { border: 2px solid var(--blue); color: var(--blue); background: transparent; }
+.btn--disabled { opacity: 0.5; }
+
+/* ── Active filter tags ─────────────────────────────────────── */
+.active-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.filter-tag {
+  background: var(--blue-light);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.78rem;
+  color: var(--navy);
+}
+
+/* ── Stat cards (6-up) ──────────────────────────────────────── */
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-cards--6 { grid-template-columns: repeat(3, 1fr); }
+
+.stat-card {
+  background: var(--blue-light);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.1rem 1rem;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(27,58,92,0.08);
+}
+
+.stat-card__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--blue);
+  margin-bottom: 0.35rem;
+}
+
+.stat-card__value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--navy);
+  line-height: 1.15;
+  margin-bottom: 0.2rem;
+}
+
+.stat-card__desc { font-size: 0.77rem; color: var(--text-muted); }
+
+/* ── Chart placeholders (3-up) ──────────────────────────────── */
+.charts-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.chart-placeholder {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(27,58,92,0.05);
+}
+
+.chart-placeholder__title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--navy);
+  padding: 0.8rem 1rem 0.4rem;
+}
+
+.chart-placeholder__sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  padding: 0 1rem 0.6rem;
+}
+
+.chart-placeholder__area {
+  background: var(--placeholder-bg);
+  min-height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  font-size: 0.8rem;
+  color: var(--placeholder-text);
+  font-style: italic;
+  text-align: center;
+}
+
+/* ── Auto-insight block ─────────────────────────────────────── */
+.insight-block {
+  background: var(--blue-pale);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--blue);
+  border-radius: 10px;
+  padding: 1.1rem 1.4rem;
+  margin-bottom: 2rem;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.insight-block strong { color: var(--navy); }
+
+/* ── Part B divider ─────────────────────────────────────────── */
+.part-divider {
+  border: none;
+  border-top: 2px dashed var(--border);
+  margin: 2.5rem 0;
+}
+
+/* ── Sortable results table section ─────────────────────────── */
+.results-section {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 4px rgba(27,58,92,0.05);
+}
+
+.results-section__header {
+  padding: 1rem 1.25rem 0.5rem;
+}
+
+.results-section__title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 0.3rem;
+}
+
+.results-section__sort {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 0.8rem;
+}
+
+.sort-control {
+  display: inline-block;
+  padding: 0.25rem 0.7rem;
+  background: var(--placeholder-bg);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Column header spec box */
+.col-spec {
+  background: var(--placeholder-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.7rem 1rem;
+  margin: 0 1.25rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.col-spec strong {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--blue);
+  margin-bottom: 0.25rem;
+}
+
+/* Placeholder table body */
+.table-placeholder {
+  background: var(--placeholder-bg);
+  margin: 0.75rem 1.25rem 1.25rem;
+  border-radius: 6px;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  color: var(--placeholder-text);
+  font-style: italic;
+}
+
+/* ── Error / empty state ────────────────────────────────────── */
+.empty-state {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.1rem 1.4rem;
+  margin-bottom: 2rem;
+  font-size: 0.87rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.empty-state strong {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+  font-style: normal;
+}
+
+/* ── Footer ─────────────────────────────────────────────────── */
+.footer {
+  background: var(--navy);
+  color: rgba(255,255,255,0.75);
+  padding: 1.5rem 2rem;
+  font-size: 0.82rem;
+  text-align: center;
+  line-height: 1.8;
+}
+
+.footer__links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+  list-style: none;
+}
+
+.footer__links a { color: rgba(255,255,255,0.8); }
+.footer__links a:hover { color: var(--white); }
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .filter-row      { grid-template-columns: repeat(2, 1fr); }
+  .stat-cards--6   { grid-template-columns: repeat(2, 1fr); }
+  .charts-row      { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .navbar__links   { display: none; }
+  .filter-row      { grid-template-columns: 1fr; }
+  .stat-cards--6   { grid-template-columns: 1fr; }
+}

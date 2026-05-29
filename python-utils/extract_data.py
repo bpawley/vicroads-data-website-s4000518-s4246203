@@ -1,6 +1,6 @@
 import sqlite3, json
 
-conn = sqlite3.connect('Road_Accidents.db')
+conn = sqlite3.connect("database/Road_Accidents.db")
 c = conn.cursor()
 
 # ── Level 1A data ──────────────────────────────────────────────────────────────
@@ -34,12 +34,19 @@ c.execute("SELECT COND_ID, COND_NAME FROM Light_Condition")
 light_conditions = c.fetchall()
 print("Light conditions:", light_conditions)
 
-night_ids = [lc[0] for lc in light_conditions if 'dark' in lc[1].lower() or 'night' in lc[1].lower()]
+night_ids = [
+    lc[0]
+    for lc in light_conditions
+    if "dark" in lc[1].lower() or "night" in lc[1].lower()
+]
 print("Night IDs:", night_ids)
 
 if night_ids:
-    placeholders = ','.join('?' * len(night_ids))
-    c.execute(f"SELECT COUNT(*) FROM Accident WHERE LIGHT_CONDITION IN ({placeholders})", night_ids)
+    placeholders = ",".join("?" * len(night_ids))
+    c.execute(
+        f"SELECT COUNT(*) FROM Accident WHERE LIGHT_CONDITION IN ({placeholders})",
+        night_ids,
+    )
     night_accidents = c.fetchone()[0]
 else:
     night_accidents = 0

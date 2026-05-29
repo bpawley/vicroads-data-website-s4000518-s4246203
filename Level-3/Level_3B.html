@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<!--
+  Level_3B.html — Injury Risk Deep Dive Page (stub)
+  VicRoads Incident Explorer
+  Wireframe 6 — Parts A and B combined on one page
+
+  STUB NOTES:
+  - This page mirrors Wireframe 6 (part a) and Wireframe 6 (part b) on one page.
+  - All stat cards, chart areas, and table rows are placeholders.
+  - TODO: Implement the 3-step chained query logic described in each section below.
+  - TODO: Render comparison bar chart and heatmap using a charting library.
+  - TODO: Populate ranked results table dynamically from query output.
+  - TODO: Wire navigation tabs to toggle between analysis views.
+  - TODO: Connect "Run Deep Dive" button to chained query execution.
+
+  Key queries needed when implementing:
+    Step 1 — Overall serious/fatal rate:
+      SELECT ROUND(
+        SUM(CASE WHEN INJ_LEVEL IN (1,2) THEN 1.0 ELSE 0 END) * 100.0 / COUNT(*), 2
+      ) as overall_rate
+      FROM Person [WHERE filters]
+
+    Step 2 — Group by road user type:
+      SELECT ru.ROAD_USER_TYPE_DESC, p.AGE_GROUP,
+             COUNT(*) as total,
+             SUM(CASE WHEN p.INJ_LEVEL IN (1,2) THEN 1 ELSE 0 END) as serious_fatal,
+             ROUND(SUM(CASE WHEN p.INJ_LEVEL IN (1,2) THEN 1.0 ELSE 0 END)*100.0/COUNT(*),2) as rate
+      FROM Person p JOIN Road_User ru ON p.ROAD_USER_TYPE = ru.ROAD_USER_TYPE
+      [WHERE filters]
+      GROUP BY ru.ROAD_USER_TYPE_DESC, p.AGE_GROUP
+
+    Step 3 — Filter to above-average groups:
+      WHERE rate > (overall_rate from Step 1)
+      ORDER BY rate DESC
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VicRoads Incident Explorer — Injury Risk Deep Dive</title>
+  <link rel="stylesheet" href="Level_3B.css">
+</head>
+<body>
+
+  <!-- ── Navigation Bar ──────────────────────────────────────── -->
+  <nav class="navbar">
+    <span class="navbar__brand">VicRoads Incident Explorer</span>
+    <ul class="navbar__links">
+      <li><a href="Level_1A.html">Home</a></li>
+      <li><a href="Level_1B.html">Mission</a></li>
+      <li><a href="Level_2A.html">Road Conditions</a></li>
+      <li><a href="Level_2B.html">People &amp; Injuries</a></li>
+      <li><a href="Level_3B.html" class="active">Deep Analysis</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── Page Heading ────────────────────────────────────────── -->
+  <header class="page-heading">
+    <h1>Injury Risk Deep Dive</h1>
+    <p>"Discover which groups have above-average serious or fatal injury outcomes."</p>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       PART A — Query logic, nav tabs, filters, stat cards
+       ═══════════════════════════════════════════════════════════ -->
+  <main class="page-body">
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="Level_1A.html">Home</a> &rsaquo;
+      <a href="Level_2B.html">People &amp; Injuries</a> &rsaquo;
+      Deep Analysis
+    </nav>
+
+    <!-- ── How the Deep Dive Works ───────────────────────────── -->
+    <!--
+      Explains the chained query logic to the user and to future developers.
+      TODO: Consider replacing with a collapsible "How it works" section.
+    -->
+    <section class="how-it-works">
+      <div class="how-it-works__title">How This Deep Dive Works</div>
+
+      <div class="query-steps">
+
+        <div class="query-step">
+          <div class="query-step__label">Query Step 1</div>
+          <!-- TODO: Run this query on page load (or on filter apply) -->
+          <p>Calculate the overall serious/fatal injury rate for selected records.<br>
+             <em>SELECT ROUND(SUM(CASE WHEN INJ_LEVEL IN (1,2) THEN 1.0 ELSE 0 END) * 100.0 / COUNT(*), 2) FROM Person [WHERE filters]</em></p>
+        </div>
+
+        <div class="query-step">
+          <div class="query-step__label">Query Step 2</div>
+          <!-- TODO: Group results by selected dimension (road user type / age group / etc.) -->
+          <p>Group records by road user type, age group, hospitalisation status, and ejection status.
+             Calculate each group's serious/fatal injury rate.<br>
+             <em>SELECT road_user_type, age_group, COUNT(*), serious_fatal_rate FROM Person JOIN Road_User ... GROUP BY ...</em></p>
+        </div>
+
+        <div class="query-step">
+          <div class="query-step__label">Query Step 3</div>
+          <!-- TODO: Filter Step 2 results to only groups where rate > Step 1 result -->
+          <p>Compare each group's serious/fatal injury rate against the overall average from Step 1.<br>
+             <em>HAVING rate &gt; [overall_rate from Step 1]</em></p>
+        </div>
+
+        <div class="query-step query-step--output">
+          <div class="query-step__label">Output</div>
+          <!-- TODO: Display above-average groups in ranked table and charts below -->
+          <p>Display groups with above-average injury outcomes, ranked by difference from average.<br>
+             (Level 3 functions use the result of one query as input to the next.)</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── Navigation Tabs ───────────────────────────────────── -->
+    <!-- TODO: Wire each tab to show/hide the relevant analysis view -->
+    <div class="nav-tabs" role="tablist">
+      <button class="nav-tab nav-tab--active" role="tab" aria-selected="true">
+        Above average injury rate
+      </button>
+      <button class="nav-tab" role="tab" aria-selected="false">
+        Comparison (simplified)
+      </button>
+      <button class="nav-tab" role="tab" aria-selected="false">
+        Ejection severity
+      </button>
+      <button class="nav-tab" role="tab" aria-selected="false">
+        Age group + road user mix
+      </button>
+    </div>
+
+    <!-- ── Advanced Filters Panel ───────────────────────────── -->
+    <!--
+      TODO: Connect all dropdowns to filter the chained queries above.
+      TODO: "Run Deep Dive" executes Steps 1–3 with selected filter values.
+      TODO: "Reset Filters" clears all inputs; "Back to Summary" navigates to Level_2B.html.
+    -->
+    <section class="filter-panel">
+      <div class="filter-panel__title">Advanced Filters Panel</div>
+      <div class="filter-panel__note">
+        <!-- TODO: Remove note once dynamic filtering is implemented -->
+        All filter controls are display-only in this stub. Connect to chained query logic.
+      </div>
+
+      <!-- Row 1 -->
+      <div class="filter-row">
+        <div class="filter-field">
+          <label for="f-road-user">Road user type</label>
+          <!-- TODO: Populate from Road_User table -->
+          <select id="f-road-user" class="filter-select" disabled>
+            <option>[Dropdown]</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="f-age">Age group</label>
+          <!-- TODO: Populate distinct AGE_GROUP values from Person -->
+          <select id="f-age" class="filter-select" disabled>
+            <option>[Dropdown]</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="f-sex">Sex</label>
+          <select id="f-sex" class="filter-select" disabled>
+            <option>[Dropdown]</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="f-hosp">Hospitalisation</label>
+          <select id="f-hosp" class="filter-select" disabled>
+            <option>[Dropdown]</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Row 2 -->
+      <div class="filter-row">
+        <div class="filter-field">
+          <label for="f-eject">Ejection status</label>
+          <!-- TODO: Populate from Ejection table -->
+          <select id="f-eject" class="filter-select" disabled>
+            <option>[Dropdown]</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="f-helmet">Helmet/belt status</label>
+          <!-- TODO: Populate from Helmet_Belt table -->
+          <select id="f-helmet" class="filter-select" disabled>
+            <option>[Dropdown]</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="f-lga">Location (LGA)</label>
+          <!-- TODO: Populate distinct LGA_NAME values from Node table -->
+          <select id="f-lga" class="filter-select" disabled>
+            <option>[Dropdown]</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="f-date">Date range</label>
+          <!-- TODO: Derive date bounds from ACCIDENT_DATE in Accident table -->
+          <input id="f-date" type="text" class="filter-input" placeholder="[Start date] – [End date]" disabled>
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <!-- TODO: onClick → run chained Steps 1–3 and refresh all panels below -->
+        <span class="btn btn--primary btn--disabled">Run Deep Dive</span>
+        <!-- TODO: onClick → reset all selects and re-run with no filters -->
+        <span class="btn btn--ghost btn--disabled">Reset Filters</span>
+        <!-- TODO: href → navigate back to Level_2B.html summary -->
+        <a href="Level_2B.html" class="btn btn--ghost">Back to Summary</a>
+      </div>
+    </section>
+
+    <!-- ── Calculation Status ─────────────────────────────────── -->
+    <!-- TODO: Show this block while queries are running; hide when results appear -->
+    <div class="calc-status">
+      <strong>Calculation Status:</strong>
+      Calculating overall serious/fatal injury rate and comparing selected groups…
+      [Replace with real status message or spinner when implemented]
+    </div>
+
+    <!-- ── Stat Cards (4-up — Part A) ────────────────────────── -->
+    <!--
+      TODO: Populate each card from chained query output.
+      Values change when filters are applied.
+    -->
+    <section class="stat-cards" aria-label="Deep dive key results">
+
+      <div class="stat-card">
+        <div class="stat-card__label">Overall Serious/Fatal Injury Rate</div>
+        <!-- TODO: = (Step 1 result) % -->
+        <div class="stat-card__value">[% displayed here]</div>
+        <div class="stat-card__desc">% of people with INJ_LEVEL 1 or 2</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__label">Highest Risk Road User Group</div>
+        <!-- TODO: = top road user type from Step 3 -->
+        <div class="stat-card__value" style="font-size:1rem;">[Label displayed here]</div>
+        <div class="stat-card__desc">Road user type with highest serious/fatal rate</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__label">Highest Risk Age Group</div>
+        <!-- TODO: = top age group from Step 3 -->
+        <div class="stat-card__value" style="font-size:1rem;">[Label displayed here]</div>
+        <div class="stat-card__desc">Age group with highest serious/fatal rate</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__label">Difference from Average</div>
+        <!-- TODO: = (top group rate) - (overall rate) -->
+        <div class="stat-card__value">[% displayed here]</div>
+        <div class="stat-card__desc">Highest group rate minus overall average</div>
+      </div>
+
+    </section>
+
+    <!-- ── Comparison Chart Placeholder ─────────────────────── -->
+    <!--
+      TODO: Render a bar chart using Step 3 results vs. overall average.
+      Data from: PERSON + INJURY + ROAD_USER tables.
+      X = Road user type or age group, Y = Serious/fatal injury rate %
+      Show overall average as a dashed baseline.
+    -->
+    <div class="chart-placeholder">
+      <div class="chart-placeholder__title">Comparison Chart Placeholder</div>
+      <div class="chart-placeholder__sub">
+        Bar chart: Selected group serious/fatal injury rate VS overall average<br>
+        Data retrieved from: PERSON + INJURY + ROAD_USER tables<br>
+        Axes: X = Road user type or age group &nbsp;|&nbsp; Y = Serious/fatal injury rate %
+      </div>
+      <div class="chart-placeholder__area">
+        [Bar chart — selected group serious/fatal injury rate VS overall average — rendered here]<br>
+        <!-- TODO: Implement with Chart.js or similar; highlight above-average bars in red -->
+      </div>
+    </div>
+
+    <!-- ── Heatmap Placeholder ───────────────────────────────── -->
+    <!--
+      TODO: Render a heatmap grid showing serious/fatal rate by age group × road user type.
+      Rows = Age groups (from Person.AGE_GROUP)
+      Columns = Road user types (from Road_User.ROAD_USER_TYPE_DESC)
+      Cell value = Serious/fatal injury % for that combination
+    -->
+    <div class="chart-placeholder">
+      <div class="chart-placeholder__title">Heatmap Placeholder</div>
+      <div class="chart-placeholder__sub">
+        Heatmap: Age group + road user type by serious/fatal injury rate<br>
+        Rows = Age groups &nbsp;|&nbsp; Columns = Road user types &nbsp;|&nbsp;
+        Cell value = Serious/fatal injury %
+      </div>
+      <div class="chart-placeholder__area">
+        [Heatmap: age group × road user type by serious/fatal injury rate — rendered here]<br>
+        <!-- TODO: Implement as CSS grid or D3-based heatmap with colour scale -->
+      </div>
+    </div>
+
+    <!-- ── Ranked Results Table ──────────────────────────────── -->
+    <!--
+      TODO: Populate rows from Step 3 output (only above-average groups).
+      Sort control: default = Difference from average descending.
+      TODO: Implement client-side column sorting.
+    -->
+    <section class="results-section">
+      <div class="results-section__header">
+        <div class="section-label">Ranked Results Table</div>
+        <div class="results-section__title">Groups above the overall average</div>
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.5rem;">
+          Sort control: <span class="sort-control">[Sort by: Difference from average descending]</span>
+          <!-- TODO: Add clickable column headers for sorting -->
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Road user type</th>
+            <th>Age group</th>
+            <th>Total people</th>
+            <th>Serious/fatal injuries</th>
+            <th>Serious/fatal injury rate</th>
+            <th>Overall average rate</th>
+            <th>Difference from average</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- TODO: Render one row per above-average group from Step 3 query results -->
+          <tr>
+            <td colspan="8">[Table rows displayed here with data from query results]</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="8">
+              Only groups with a serious/fatal injury rate above the overall average are shown.
+              Sorted by difference from average, descending.
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </section>
+
+    <!-- ── Interpretation Note ──────────────────────────────── -->
+    <div class="interpretation-note">
+      <strong>Interpretation Note</strong>
+      Groups shown in this table are above the selected dataset's overall serious/fatal injury average.
+      These results help identify groups that may require targeted injury prevention actions.
+    </div>
+
+    <!-- ── Error / Empty State ──────────────────────────────── -->
+    <!-- TODO: Show this block only when Step 3 query returns zero rows -->
+    <div class="empty-state">
+      <strong>Error / Empty State Message</strong>
+      No above-average groups found. Try widening the filters or selecting a larger date range.
+    </div>
+
+  </main>
+
+  <!-- ── Footer ──────────────────────────────────────────────── -->
+  <footer class="footer">
+    <p>Data source: Department of Transport and Planning, Victoria &nbsp;|&nbsp; Built by Brandon &amp; Somanea</p>
+    <ul class="footer__links">
+      <li><a href="Level_1A.html">Home</a></li>
+      <li><a href="Level_1B.html">Mission</a></li>
+      <li><a href="Level_2A.html">Road Conditions</a></li>
+      <li><a href="Level_2B.html">People &amp; Injuries</a></li>
+      <li><a href="Level_3B.html">Deep Analysis</a></li>
+    </ul>
+  </footer>
+
+</body>
+</html>

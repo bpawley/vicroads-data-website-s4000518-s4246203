@@ -1,0 +1,304 @@
+/* ============================================================
+   Level_1B.css — Mission Statement Page (stub)
+   VicRoads Incident Explorer
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  color: #1a2b3c;
+  background: #f4f8fc;
+  line-height: 1.5;
+}
+
+a { color: inherit; text-decoration: none; }
+
+:root {
+  --navy:      #1b3a5c;
+  --blue:      #2563a8;
+  --blue-mid:  #3a7dc9;
+  --blue-light:#cde4f7;
+  --blue-pale: #e8f3fb;
+  --accent:    #f0a500;
+  --white:     #ffffff;
+  --text:      #1a2b3c;
+  --text-muted:#5a6e82;
+  --border:    #b8d4ec;
+  --placeholder-bg: #e0edf8;
+  --placeholder-text: #7a9bb5;
+}
+
+/* ── Navigation ─────────────────────────────────────────────── */
+.navbar {
+  background: var(--navy);
+  color: var(--white);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+.navbar__brand { font-size: 1rem; font-weight: 700; white-space: nowrap; }
+
+.navbar__links { display: flex; gap: 0.25rem; list-style: none; }
+
+.navbar__links a {
+  display: block;
+  padding: 0.4rem 0.9rem;
+  border-radius: 4px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  transition: background 0.15s;
+}
+
+.navbar__links a:hover,
+.navbar__links a.active { background: rgba(255,255,255,0.15); color: var(--white); }
+
+/* ── Hero banner ────────────────────────────────────────────── */
+.hero {
+  background: linear-gradient(135deg, var(--blue) 0%, var(--navy) 100%);
+  color: var(--white);
+  text-align: center;
+  padding: 3.5rem 2rem 3rem;
+}
+
+.hero h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.6rem; }
+.hero p  { font-size: 1rem; color: rgba(255,255,255,0.8); margin-bottom: 1.6rem; }
+
+.btn {
+  display: inline-block;
+  padding: 0.6rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  transition: opacity 0.15s;
+}
+
+.btn:hover { opacity: 0.85; }
+.btn--accent { background: var(--accent); color: var(--navy); }
+.btn--outline { border: 2px solid var(--blue); color: var(--blue); background: transparent; }
+
+/* ── Page body ──────────────────────────────────────────────── */
+.page-body {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+/* ── Section titles ─────────────────────────────────────────── */
+.section-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-muted);
+  margin-bottom: 0.9rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Mission text block ─────────────────────────────────────── */
+.mission-block {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 4px rgba(27,58,92,0.05);
+}
+
+.mission-block p {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ── Challenge cards ────────────────────────────────────────── */
+.challenge-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.challenge-card {
+  background: var(--blue-pale);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem 1.2rem;
+  box-shadow: 0 2px 6px rgba(27,58,92,0.06);
+}
+
+.challenge-card__num {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--blue);
+  margin-bottom: 0.4rem;
+}
+
+.challenge-card h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 0.4rem;
+}
+
+.challenge-card p {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ── How to use — step process ──────────────────────────────── */
+.steps-section {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 4px rgba(27,58,92,0.05);
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.step-card {
+  background: var(--blue-pale);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.step-card__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--blue);
+  color: var(--white);
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.step-card h4 { font-size: 0.88rem; font-weight: 700; color: var(--navy); margin-bottom: 0.3rem; }
+.step-card p  { font-size: 0.79rem; color: var(--text-muted); font-style: italic; }
+
+/* ── Target personas ────────────────────────────────────────── */
+.personas-section { margin-bottom: 2rem; }
+
+.personas-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.persona-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 4px rgba(27,58,92,0.05);
+}
+
+.persona-card__photo {
+  width: 100%;
+  height: 120px;
+  background: var(--placeholder-bg);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--placeholder-text);
+  font-size: 0.8rem;
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+
+.persona-card__name { font-size: 1rem; font-weight: 700; color: var(--navy); }
+.persona-card__role { font-size: 0.82rem; font-weight: 600; color: var(--blue); margin-bottom: 0.6rem; }
+
+.persona-card__focus-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 0.2rem;
+}
+
+.persona-card p { font-size: 0.83rem; color: var(--text-muted); font-style: italic; }
+
+/* ── Team members ───────────────────────────────────────────── */
+.team-block {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 4px rgba(27,58,92,0.05);
+}
+
+.team-block p { font-size: 0.87rem; color: var(--text-muted); line-height: 1.8; }
+
+/* ── Data note ──────────────────────────────────────────────── */
+.data-note {
+  background: var(--blue-pale);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--blue-mid);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 2rem;
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ── Footer ─────────────────────────────────────────────────── */
+.footer {
+  background: var(--navy);
+  color: rgba(255,255,255,0.75);
+  padding: 1.5rem 2rem;
+  font-size: 0.82rem;
+  text-align: center;
+  line-height: 1.8;
+}
+
+.footer__links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+  list-style: none;
+}
+
+.footer__links a { color: rgba(255,255,255,0.8); }
+.footer__links a:hover { color: var(--white); }
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 800px) {
+  .challenge-cards { grid-template-columns: 1fr; }
+  .steps-grid      { grid-template-columns: repeat(2, 1fr); }
+  .personas-grid   { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .navbar__links { display: none; }
+  .steps-grid    { grid-template-columns: 1fr; }
+}

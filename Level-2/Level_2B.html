@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<!--
+  Level_2B.html — People and Injuries Summary Page (stub)
+  VicRoads Incident Explorer
+  Wireframe 5 — Parts A and B combined on one page
+
+  STUB NOTES:
+  - Layout mirrors Wireframe 5 (part a) and Wireframe 5 (part b).
+  - All stat values, chart areas, and table rows are placeholders.
+  - TODO: Replace [Large number displayed here] values with DB queries.
+  - TODO: Implement dynamic filter logic (road user type, age group, sex, etc.).
+  - TODO: Render real charts in chart placeholder areas.
+  - TODO: Populate sortable results table with Person + Injury + Road_User data.
+  - TODO: Wire sort control to JS sort logic.
+  - TODO: Add real active filter tag rendering logic.
+
+  Key queries needed when implementing dynamically:
+    Total people:
+      SELECT COUNT(*) FROM Person
+
+    Injury breakdown:
+      SELECT INJ_LEVEL, COUNT(*) FROM Person GROUP BY INJ_LEVEL
+
+    Taken to hospital:
+      SELECT TAKEN_HOSPITAL, COUNT(*) FROM Person GROUP BY TAKEN_HOSPITAL
+
+    Ejected:
+      SELECT EJECTED_CODE, COUNT(*) FROM Person JOIN Ejection ON...
+      WHERE ejected_code != 0 (not ejected)
+
+    Road user type breakdown:
+      SELECT ru.ROAD_USER_TYPE_DESC, COUNT(*) FROM Person p
+      JOIN Road_User ru ON p.ROAD_USER_TYPE = ru.ROAD_USER_TYPE
+      GROUP BY ru.ROAD_USER_TYPE_DESC ORDER BY COUNT(*) DESC
+
+    Age group breakdown:
+      SELECT AGE_GROUP, COUNT(*) FROM Person GROUP BY AGE_GROUP ORDER BY AGE_GROUP
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VicRoads Incident Explorer — People &amp; Injuries</title>
+  <link rel="stylesheet" href="Level_2B.css">
+</head>
+<body>
+
+  <!-- ── Navigation Bar ──────────────────────────────────────── -->
+  <nav class="navbar">
+    <span class="navbar__brand">VicRoads Incident Explorer</span>
+    <ul class="navbar__links">
+      <li><a href="Level_1A.html">Home</a></li>
+      <li><a href="Level_1B.html">Mission</a></li>
+      <li><a href="Level_2A.html">Road Conditions</a></li>
+      <li><a href="Level_2B.html" class="active">People &amp; Injuries</a></li>
+      <li><a href="Level_3B.html">Deep Analysis</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── Page Heading ────────────────────────────────────────── -->
+  <header class="page-heading">
+    <h1>People and Injuries Summary</h1>
+    <p>Summarise injury outcomes by road user type, age group, hospitalisation, ejection status, and injury severity.</p>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       PART A — Filters, Stat Cards, Charts
+       ═══════════════════════════════════════════════════════════ -->
+  <main class="page-body">
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="Level_1A.html">Home</a> &rsaquo; People &amp; Injuries
+    </nav>
+
+    <!-- ── Filter Panel ──────────────────────────────────────── -->
+    <!--
+      TODO: Connect each dropdown/input to a dynamic query that
+            filters the Person + Injury + Road_User + Accident tables.
+      TODO: "Apply Filters" should re-render all stat cards and charts below.
+      TODO: "Reset Filters" clears all inputs back to defaults.
+    -->
+    <section class="filter-panel">
+      <div class="filter-panel__title">Filter Panel</div>
+      <div class="filter-panel__note">
+        <!-- TODO: Remove this note once filters are functional -->
+        Dynamic filtering will be implemented here. All controls are display-only in this stub.
+      </div>
+
+      <!-- Row 1 -->
+      <div class="filter-row">
+        <div class="filter-field">
+          <label for="f-road-user">Road user type</label>
+          <!-- TODO: Populate from Road_User table -->
+          <select id="f-road-user" class="filter-select" disabled>
+            <option>[Dropdown]</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="f-age-group">Age group</label>
+          <!-- TODO: Populate distinct AGE_GROUP values from Person table -->
+          <select id="f-age-group" class="filter-select" disabled>
+            <option>[Dropdown]</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="f-sex">Sex</label>
+          <select id="f-sex" class="filter-select" disabled>
+            <option>[Dropdown]</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="f-injury">Injury severity</label>
+          <!-- TODO: Populate from Injury table (INJ_LEVEL 1–4) -->
+          <select id="f-injury" class="filter-select" disabled>
+            <option>[Dropdown]</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Row 2 -->
+      <div class="filter-row">
+        <div class="filter-field">
+          <label for="f-hospital">Taken to hospital</label>
+          <select id="f-hospital" class="filter-select" disabled>
+            <option>[Yes / No]</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="f-helmet">Helmet/belt status</label>
+          <!-- TODO: Populate from Helmet_Belt table -->
+          <select id="f-helmet" class="filter-select" disabled>
+            <option>[Dropdown]</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="f-lga">Location (LGA)</label>
+          <!-- TODO: Populate distinct LGA_NAME values from Node table -->
+          <select id="f-lga" class="filter-select" disabled>
+            <option>[Dropdown]</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="f-date">Date range</label>
+          <!-- TODO: Derive date range from ACCIDENT_DATE in Accident table -->
+          <input id="f-date" type="text" class="filter-input" placeholder="[Start date] – [End date]" disabled>
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <!-- TODO: onClick → re-run all queries with selected filter values -->
+        <span class="btn btn--primary btn--disabled">Apply Filters</span>
+        <!-- TODO: onClick → reset all filter selects to default -->
+        <span class="btn btn--ghost btn--disabled">Reset Filters</span>
+      </div>
+    </section>
+
+    <!-- ── Active Filter Tags ─────────────────────────────────── -->
+    <!-- TODO: Render dynamically as filters are applied -->
+    <div class="active-filters">
+      <span>Active filters:</span>
+      <span class="filter-tag">All road users</span>
+      <span class="filter-tag">All age groups</span>
+      <span class="filter-tag">All injury levels</span>
+      <!-- TODO: Add/remove tags dynamically when filters change -->
+    </div>
+
+    <!-- ── Stat Cards (6 cards — Part A) ─────────────────────── -->
+    <!--
+      TODO: Query values from Person table (with active filters applied).
+      INJ_LEVEL: 1=Fatal, 2=Serious, 3=Other, 4=Not injured
+    -->
+    <section class="stat-cards stat-cards--6" aria-label="Injury summary statistics">
+
+      <div class="stat-card">
+        <div class="stat-card__label">Total People Involved</div>
+        <!-- TODO: SELECT COUNT(*) FROM Person [WHERE filters] -->
+        <div class="stat-card__value">[Large number displayed here]</div>
+        <div class="stat-card__desc">All road users in filtered records</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__label">Total Injured</div>
+        <!-- TODO: SELECT COUNT(*) FROM Person WHERE INJ_LEVEL IN (1,2,3) [AND filters] -->
+        <div class="stat-card__value">[Large number displayed here]</div>
+        <div class="stat-card__desc">Injury levels 1–3 (excl. not injured)</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__label">Serious Injuries</div>
+        <!-- TODO: SELECT COUNT(*) FROM Person WHERE INJ_LEVEL = 2 [AND filters] -->
+        <div class="stat-card__value">[Large number displayed here]</div>
+        <div class="stat-card__desc">INJ_LEVEL = 2 (Serious injury)</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__label">Fatalities</div>
+        <!-- TODO: SELECT COUNT(*) FROM Person WHERE INJ_LEVEL = 1 [AND filters] -->
+        <div class="stat-card__value">[Large number displayed here]</div>
+        <div class="stat-card__desc">INJ_LEVEL = 1 (Fatal)</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__label">Taken to Hospital</div>
+        <!-- TODO: SELECT COUNT(*) FROM Person WHERE TAKEN_HOSPITAL = 'Yes' [AND filters] -->
+        <div class="stat-card__value">[Large number displayed here]</div>
+        <div class="stat-card__desc">TAKEN_HOSPITAL = 'Yes'</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__label">Ejected Persons</div>
+        <!-- TODO: SELECT COUNT(*) FROM Person WHERE EJECTED_CODE > 1 [AND filters]
+                   (EJECTED_CODE 1 = not ejected, 2+ = ejected or unknown) -->
+        <div class="stat-card__value">[Large number displayed here]</div>
+        <div class="stat-card__desc">EJECTED_CODE ≥ 2</div>
+      </div>
+
+    </section>
+
+    <!-- ── Chart Placeholders (3 charts — Part A) ────────────── -->
+    <!--
+      TODO: Render each chart using a JS charting library (e.g. Chart.js).
+      Data source for each is noted below.
+    -->
+    <div class="charts-row">
+
+      <!-- Chart 1: Injury severity by road user type -->
+      <div class="chart-placeholder">
+        <div class="chart-placeholder__title">Chart Placeholder 1</div>
+        <div class="chart-placeholder__sub">
+          Injury severity by road user type<br>
+          <!-- TODO: Query: SELECT ru.ROAD_USER_TYPE_DESC, p.INJ_LEVEL, COUNT(*) FROM Person p
+                             JOIN Road_User ru ON p.ROAD_USER_TYPE = ru.ROAD_USER_TYPE
+                             GROUP BY ru.ROAD_USER_TYPE_DESC, p.INJ_LEVEL -->
+          X = Road user type &nbsp;|&nbsp; Y = Count by injury level
+        </div>
+        <div class="chart-placeholder__area">
+          [Bar chart here]
+        </div>
+      </div>
+
+      <!-- Chart 2: Taken to hospital vs not -->
+      <div class="chart-placeholder">
+        <div class="chart-placeholder__title">Chart Placeholder 2</div>
+        <div class="chart-placeholder__sub">
+          Taken to hospital vs not taken to hospital<br>
+          <!-- TODO: Query: SELECT TAKEN_HOSPITAL, COUNT(*) FROM Person
+                             GROUP BY TAKEN_HOSPITAL -->
+          Split by hospital admission status
+        </div>
+        <div class="chart-placeholder__area">
+          [Donut chart here]
+        </div>
+      </div>
+
+      <!-- Chart 3: Serious injuries by age group -->
+      <div class="chart-placeholder">
+        <div class="chart-placeholder__title">Chart Placeholder 3</div>
+        <div class="chart-placeholder__sub">
+          Serious injuries by age group<br>
+          <!-- TODO: Query: SELECT AGE_GROUP, COUNT(*) FROM Person
+                             WHERE INJ_LEVEL IN (1,2)
+                             GROUP BY AGE_GROUP ORDER BY AGE_GROUP -->
+          X = Age group &nbsp;|&nbsp; Y = Serious/fatal count
+        </div>
+        <div class="chart-placeholder__area">
+          [Bar chart here]
+        </div>
+      </div>
+
+    </div><!-- /.charts-row -->
+
+    <!-- ── Auto-generated Insight Block ─────────────────────── -->
+    <!-- TODO: Generate this text dynamically from query results -->
+    <div class="insight-block">
+      <strong>Auto-generated insight:</strong>
+      "Selected filters show which road user groups experience higher injury severity."
+      <br>
+      [Export Summary: ___]
+      <!-- TODO: Replace with dynamic insight text once filters are wired up -->
+    </div>
+
+    <!-- ── Sortable Results Table ─────────────────────────────── -->
+    <!--
+      TODO: Populate rows from:
+        SELECT ru.ROAD_USER_TYPE_DESC, p.AGE_GROUP,
+               COUNT(*) as total_people,
+               SUM(CASE WHEN p.INJ_LEVEL = 1 THEN 1 ELSE 0 END) as fatalities,
+               SUM(CASE WHEN p.INJ_LEVEL = 2 THEN 1 ELSE 0 END) as serious,
+               SUM(CASE WHEN p.INJ_LEVEL = 3 THEN 1 ELSE 0 END) as other_inj,
+               SUM(CASE WHEN p.TAKEN_HOSPITAL = 'Yes' THEN 1 ELSE 0 END) as hospitalised,
+               SUM(CASE WHEN p.EJECTED_CODE > 1 THEN 1 ELSE 0 END) as ejected,
+               ROUND((SUM(CASE WHEN p.INJ_LEVEL IN (1,2) THEN 1 ELSE 0 END)*100.0/COUNT(*)),1) as serious_fatal_pct
+        FROM Person p JOIN Road_User ru ON p.ROAD_USER_TYPE = ru.ROAD_USER_TYPE
+        GROUP BY ru.ROAD_USER_TYPE_DESC, p.AGE_GROUP
+        ORDER BY serious_fatal_pct DESC  (default sort)
+      TODO: Implement client-side sort on column header click.
+    -->
+    <section class="results-section">
+      <div class="results-section__header">
+        <div class="section-label">Sortable Results Table</div>
+        <div class="results-section__title">Detailed people and injury summary</div>
+        <div class="results-section__sort">
+          <strong>Sort control:</strong>
+          <span class="sort-control">[Sort by: Serious/fatal % descending]</span>
+          <!-- TODO: Add clickable sort controls per column -->
+        </div>
+      </div>
+
+      <div class="col-spec">
+        <strong>Table Columns:</strong>
+        Road user type &nbsp;|&nbsp; Age group &nbsp;|&nbsp; Total people &nbsp;|&nbsp;
+        Fatalities &nbsp;|&nbsp; Serious injuries &nbsp;|&nbsp; Other injuries &nbsp;|&nbsp;
+        Taken to hospital &nbsp;|&nbsp; Ejected &nbsp;|&nbsp; Serious/fatal %
+      </div>
+
+      <div class="table-placeholder">
+        [Sortable table rows would appear here — populated dynamically from Person + Road_User + Injury query]
+      </div>
+    </section>
+
+    <!-- ── Error / Empty State ───────────────────────────────── -->
+    <!-- TODO: Show this block only when query returns zero rows -->
+    <div class="empty-state">
+      <strong>Error / Empty State Message</strong>
+      No results found? Try resetting filters or widening the date range.
+    </div>
+
+  </main>
+
+  <!-- ── Footer ──────────────────────────────────────────────── -->
+  <footer class="footer">
+    <p>Data source: Department of Transport and Planning, Victoria &nbsp;|&nbsp; Built by Brandon &amp; Somanea</p>
+    <ul class="footer__links">
+      <li><a href="Level_1A.html">Home</a></li>
+      <li><a href="Level_1B.html">Mission</a></li>
+      <li><a href="Level_2A.html">Road Conditions</a></li>
+      <li><a href="Level_2B.html">People &amp; Injuries</a></li>
+      <li><a href="Level_3B.html">Deep Analysis</a></li>
+    </ul>
+  </footer>
+
+</body>
+</html>
